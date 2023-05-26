@@ -46,3 +46,15 @@
   color: var(--accent-color);
   text-decoration: underline;
 }
+
+.footer .githubIcon {
+  position: absolute;
+  right: 0;
+  margin-right: 25px;
+  padding: 5px;
+  background-color: var(--background-color);
+  border-radius: 50%;
+}
+.footer .githubIcon > img {
+  background-color: transparent;
+}
