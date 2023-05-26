@@ -22,6 +22,11 @@
   color: var(--background-color);
 }
 
+.textField::-webkit-outer-spin-button,
+.textField::-webkit-inner-spin-button {
+  display: none;
+}
+
 .inputLabel {
   position: absolute;
   top: 50%;

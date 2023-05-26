@@ -10,12 +10,10 @@
   cursor: pointer;
 }
 
-.buttonText {
+.button .buttonText {
   position: relative;
   font-size: var(--font-size-h2);
   font-weight: var(--font-weight-h2);
-  font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
   color: var(--background-color);
   background-color: transparent;
