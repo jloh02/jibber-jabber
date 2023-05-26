@@ -1,0 +1,63 @@
+.textFieldContainer {
+  border: var(--border-radius) solid var(--accent-color);
+  border-radius: var(--border-radius);
+  margin-bottom: 30px;
+  --text-field-internal-padding: 0 25px;
+}
+
+.textField {
+  padding: 30px 20px;
+
+  outline: none;
+  user-select: none;
+  border: none;
+  width: 420px;
+  color: var(--foreground-color);
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-h3);
+}
+
+.textField::selection {
+  background-color: #656462;
+  color: var(--background-color);
+}
+
+.inputLabel {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  user-select: none;
+  padding: var(--text-field-internal-padding);
+
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-h3);
+  background-color: var(--background-color);
+  border-radius: var(--border-radius);
+  color: var(--foreground-color);
+  pointer-events: none;
+
+  transition: all 0.1s ease-in-out;
+}
+
+.inputLabelUp {
+  padding: 0 5px;
+  color: var(--accent-color);
+  font-size: var(--font-size);
+  margin-top: 0px;
+  top: 0;
+  left: 2%;
+  transform: translateY(calc(-50% - 2.5px));
+}
+
+.hideIcon {
+  position: absolute;
+  padding: var(--text-field-internal-padding);
+  height: var(--font-size-h3);
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: all;
+  cursor: pointer;
+  background-color: transparent;
+}

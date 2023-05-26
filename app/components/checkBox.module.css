@@ -1,0 +1,36 @@
+.checkBoxContainer {
+  display: flex;
+  width: 420px;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.checkBox {
+  border: solid var(--accent-color);
+  border-radius: var(--border-radius);
+  background-color: transparent;
+  display: inline-block;
+  appearance: none;
+
+  height: 30px;
+  width: 30px;
+  padding: 2px;
+  margin-right: 16px;
+}
+
+.checked {
+  background-color: var(--accent-color);
+}
+
+.checkmark {
+  background-color: transparent;
+  height: 100%;
+  width: 100%;
+  color: var(--background-color);
+}
+
+.label {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-h3);
+  user-select: none;
+}
