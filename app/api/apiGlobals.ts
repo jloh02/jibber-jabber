@@ -28,27 +28,26 @@ const CUSTOM_AGENT = new Agent({
   minVersion: "TLSv1.2",
 });
 
-const headers = {
-  "Content-Type": "application/json",
-  "User-Agent": `RiotClient/${VERSION.buildNumber} rso-auth (Windows; 10;;Professional, x64)`,
-};
-
 export function riotFetch(
   url: URL | RequestInfo,
   init?: RequestInit
 ): Promise<Response> {
+  const headers = {
+    "Content-Type": "application/json",
+    "User-Agent": `RiotClient/${getBuildNumber()} rso-auth (Windows; 10;;Professional, x64)`,
+    ...init?.headers,
+  };
   return fetch(url, {
     agent: CUSTOM_AGENT,
-    headers,
     ...init,
+    headers,
   });
 }
 
 let lastUpdateBuildVersion = 0;
 export async function updateBuildVersions() {
   //5 minutes
-  if (Date.now() - lastUpdateBuildVersion > 300000) return;
-  lastUpdateBuildVersion = Date.now();
+  if (Date.now() - lastUpdateBuildVersion < 300000) return;
   try {
     const verRes = (await (
       await fetch("https://valorant-api.com/v1/version")
@@ -56,8 +55,13 @@ export async function updateBuildVersions() {
 
     VERSION.buildNumber = verRes.data.riotClientBuild;
     VERSION.riotClientVersion = verRes.data.version;
+
+    console.log(VERSION);
+
     if (!VERSION.buildNumber || !VERSION.riotClientVersion) {
       console.error("Undefined buildNumber and riotClientVersion: " + VERSION);
+    } else {
+      lastUpdateBuildVersion = Date.now();
     }
   } catch (err) {
     console.error("Unable to get client build version: ", err);
