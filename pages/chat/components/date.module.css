@@ -1,0 +1,15 @@
+.box {
+    position: relative;
+    left: 50%;
+    text-align: center;
+    background-color: #E7E7E7;
+    border-radius: 10px;
+    width: fit-content;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.date {
+    color: #656462;
+    font-size: 20px;
+}
