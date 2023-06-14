@@ -1,9 +1,9 @@
 div.chat {
     position: fixed;
-    height: 671px;
+    height: 600px;
     width: 1008px;
     border: 1px black solid;
     right: 0%;
-    bottom: 0%;
+    bottom: 10%;
     overflow-y: scroll;
 }

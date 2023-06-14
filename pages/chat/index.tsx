@@ -3,6 +3,7 @@ import styles from "./index.module.css";
 import { SentMessage } from './components/message-sent';
 import { ReceivedMessage } from './components/messaged-received';
 import { Date } from './components/Date';
+import './styles.css'
 
 export default function Chat() {
     return (
