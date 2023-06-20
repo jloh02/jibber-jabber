@@ -1,6 +1,10 @@
-import { riotFetch, RIOT_AUTH_URL } from "../apiGlobals";
-import { NextRequest, NextResponse } from "next/server";
-import { updateBuildVersions } from "../apiGlobals";
+import {
+  riotFetch,
+  RIOT_AUTH_URL,
+  sendResponse,
+  updateBuildVersions,
+} from "../apiGlobals";
+import { NextRequest } from "next/server";
 import { RequestInit } from "node-fetch";
 
 const COOKIE_REQUEST_BODY = {
@@ -36,16 +40,7 @@ export async function POST(request: NextRequest) {
   const authRes = await riotFetch(RIOT_AUTH_URL, init);
   const body = (await authRes.json()) as RiotCookieResponse;
 
-  authRes.headers.delete("Content-Length");
-  authRes.headers.delete("Content-Type");
+  console.log(body);
 
-  body.cookie = authRes.headers
-    .get("set-cookie")
-    ?.split(", ")
-    .find((v) => RegExp(`^asid`).test(v));
-
-  return NextResponse.json(body, {
-    status: authRes.status,
-    headers: authRes.headers,
-  });
+  return sendResponse(body, authRes);
 }

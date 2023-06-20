@@ -1,6 +1,6 @@
-import { riotFetch, RIOT_AUTH_URL } from "../apiGlobals";
+import { riotFetch, RIOT_AUTH_URL, sendResponse } from "../apiGlobals";
 import { updateBuildVersions } from "../apiGlobals";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 interface RiotAuthResponse {
   type: string;
@@ -28,18 +28,7 @@ export async function PUT(request: NextRequest) {
     headers: cookie ? { cookie } : undefined,
   });
 
-  authRes.headers.delete("Content-Length");
-  authRes.headers.delete("Content-Type");
-
   const body = (await authRes.json()) as RiotAuthResponse;
 
-  body.cookie = authRes.headers
-    .get("set-cookie")
-    ?.split(", ")
-    .find((v) => RegExp(`^asid`).test(v));
-
-  return NextResponse.json(body, {
-    status: authRes.status,
-    headers: authRes.headers,
-  });
+  return sendResponse(body, authRes);
 }

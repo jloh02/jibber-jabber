@@ -1,4 +1,5 @@
 import { Agent } from "https";
+import { NextResponse } from "next/server";
 import fetch, { RequestInfo, RequestInit, Response } from "node-fetch";
 
 const VERSION = {
@@ -66,4 +67,17 @@ export async function updateBuildVersions() {
   } catch (err) {
     console.error("Unable to get client build version: ", err);
   }
+}
+
+// Forwards request but deletes incorrect content info and sets cookie into response body
+export function sendResponse(body: any, apiResponse: Response): NextResponse {
+  apiResponse.headers.delete("Content-Length");
+  apiResponse.headers.delete("Content-Type");
+
+  body.cookie = apiResponse.headers.get("set-cookie");
+
+  return NextResponse.json(body, {
+    status: apiResponse.status,
+    headers: apiResponse.headers,
+  });
 }

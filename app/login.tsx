@@ -6,8 +6,12 @@ import CheckBox from "./components/checkBox";
 import TextField from "./components/textField";
 import MfaDialog from "./components/mfaDialog";
 import Error from "./components/error";
-import { getNewCookie, refreshCookie } from "./lib/riot_cookies";
-import Router from "next/router";
+import {
+  fetchWithCookie,
+  getNewCookie,
+  refreshCookie,
+} from "./lib/riot_cookies";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -19,9 +23,11 @@ export default function Login() {
 
   const [error, setError] = useState("");
 
+  const router = useRouter();
+
   useEffect(() => {
     refreshCookie().then(async (credentials) => {
-      if (credentials) Router.replace("/chat");
+      if (credentials) router.replace("/chat");
     });
   }, []);
 
@@ -35,20 +41,36 @@ export default function Login() {
       <Button
         label="Sign In"
         onClick={async () => {
-          const cookie = await getNewCookie();
+          setError("");
+          for (let i = 0; i < 3; i++) {
+            const cookie = await getNewCookie();
 
-          const authRes = await fetch("/api/auth", {
-            method: "PUT",
-            body: JSON.stringify({ username, password, cookie }),
-          });
-          // setCookie((await authRes.json()).cookie);
-          console.log(await authRes.json());
+            const [authRes, body] = await fetchWithCookie("/api/auth", "asid", {
+              method: "PUT",
+              body: JSON.stringify({ username, password, cookie }),
+            });
 
-          // console.log("LOGIN");
-          // if (username === "asdf") {
-          //   setError(false);
-          //   mfaDialog.showDialog("test@abc.com");
-          // } else setError(true);
+            if (body.type === "error") continue;
+
+            if (body.error === "rate_limited") {
+              setError("Rate Limited. Try again later.");
+              return;
+            }
+
+            if (body.error === "auth_failure") {
+              setError("Incorrect username or password");
+              return;
+            }
+
+            if (body.type === "multifactor") {
+              mfaDialog.showDialog(body.multifactor.email);
+              return;
+            }
+
+            setError("Unknown error occurred");
+            return;
+          }
+          setError("An unexpected error occurred");
         }}
       />
     </>
