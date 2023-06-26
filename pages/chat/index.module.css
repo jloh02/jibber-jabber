@@ -1,9 +1,16 @@
 div.chat {
     position: fixed;
-    height: 600px;
-    width: 1008px;
-    border: 1px black solid;
+    height: 80%;
+    width: 70%;
     right: 0%;
     bottom: 10%;
     overflow-y: scroll;
+}
+
+.send {
+    position: fixed;
+    width: 70%;
+    height: 10%;
+    right: 0%;
+    bottom: 0%;
 }

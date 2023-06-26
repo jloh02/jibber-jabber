@@ -1,0 +1,55 @@
+.container {
+    z-index: 0;
+    background-color: #E7E7E7;
+    position: fixed;
+    height: 90%;
+    width: 30%;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.settingsContainer {
+    z-index: 2;
+    display: flex;
+    align-items: flex-start;
+    padding: 10px;
+    box-sizing: border-box;
+    cursor: pointer;
+    position: relative;
+}
+
+.settings {
+    margin: 14px 0 0 8px;
+    color: #656462;
+    font-size: 32px;
+}
+
+.popoutMenu {
+    position: absolute;
+    top: 70px;
+    left: 8px;
+    width: 200px;
+    border-radius: 20px;
+    background-color: #656462;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.scroll {
+    flex-grow: 1;
+    overflow-y: scroll;
+}
+
+.popupOptions {
+    color: #E7E7E7;
+    margin-left: 30px;
+}

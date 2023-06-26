@@ -5,11 +5,11 @@
     border-radius: 10px;
     width: fit-content;
     margin: auto;
-    padding-left: 20px;
-    padding-right: 20px;
+    padding: 0px 20px;
 }
 
 .date {
+    font-family: Roboto, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     color: #656462;
     font-size: 20px;
 }

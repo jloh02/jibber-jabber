@@ -1,0 +1,51 @@
+.arrowRight {
+    margin: 30px 5px 0px 20px;
+    margin-right: 20px;
+    margin-top: 30px;
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 18px solid #656462;
+    transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+    transition: all 0.3s ease;
+}
+
+.arrowDown {
+    margin: 30px 5px 0px 20px;
+    margin-right: 20px;
+    margin-top: 30px;
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 18px solid #656462;
+    transition: all 0.3s ease;
+}
+
+.dropdownOptions {
+    display: none;
+    color: #656462;
+    font-size: 24px;
+    margin-left: 60px;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.dropdownOptionsOpen {
+    display: block;
+    color: #656462;
+    font-size: 24px;
+    margin-left: 60px;
+    opacity: 1;
+    transition: all 0.3s ease;
+}
+
+.header {
+    color: #656462;
+    display: inline;
+    font-size: 24px;
+}

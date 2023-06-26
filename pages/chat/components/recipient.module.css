@@ -1,0 +1,26 @@
+.Container {
+    background-color: #E7E7E7;
+    position: fixed;
+    width: 70%;
+    height: 10%;
+    top: 0;
+    right: 0;
+}
+
+.name {
+    margin: 1.5% 0px 2px 16px;
+    color: #212121;
+    text-align: justify;
+    font-size: 22px;
+    font-weight: 500;
+    font-family: Roboto;
+}
+
+.status {
+    margin: 0;
+    margin-left: 16px;
+    color: #212121;
+    text-align: justify;
+    font-size: 14px;
+    font-family: Roboto;
+}
