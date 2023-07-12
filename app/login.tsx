@@ -19,7 +19,10 @@ export default function Login() {
   const [isKeepLoggedIn, setKeepLogin] = useState(false);
 
   const [otp, setOtp] = useState("");
-  const mfaDialog = MfaDialog({ otpState: [otp, setOtp] });
+  const mfaDialog = MfaDialog({
+    otpState: [otp, setOtp],
+    keepLoggedIn: isKeepLoggedIn,
+  });
 
   const [error, setError] = useState("");
 

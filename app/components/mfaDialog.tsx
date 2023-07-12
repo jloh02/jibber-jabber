@@ -9,8 +9,10 @@ import { useRouter } from "next/navigation";
 
 export default function MfaDialog({
   otpState,
+  keepLoggedIn,
 }: {
   otpState: [string, Dispatch<SetStateAction<string>>];
+  keepLoggedIn: boolean;
 }) {
   const mfaDialog = useRef<HTMLDialogElement>(null);
   const [otp, setOtp] = otpState;
@@ -29,7 +31,7 @@ export default function MfaDialog({
   useEffect(() => {
     if (otp.length >= 6) {
       setOtp("");
-      fetchWithCookie("/api/mfa", "asid", {
+      fetchWithCookie("/api/mfa", "ssid", {
         method: "PUT",
         body: JSON.stringify({ code: otp }),
       }).then(async ([res, body]) => {
@@ -49,7 +51,7 @@ export default function MfaDialog({
             return;
           } else {
             setError("");
-            storeTokenWithUri(body.response.parameters.uri);
+            if (keepLoggedIn) storeTokenWithUri(body.response.parameters.uri);
             router.push("/chat");
             return;
           }
@@ -57,14 +59,8 @@ export default function MfaDialog({
         setError("Unknown Error");
         console.error(body);
       });
-      // if (otp === "123456") {
-      //   setError("");
-      //   mfaDialog.current?.close();
-      // } else {
-      //   setError("Invalid Code");
-      // }
     }
-  }, [otp]);
+  }, [otp, keepLoggedIn]);
 
   return {
     dialog: (

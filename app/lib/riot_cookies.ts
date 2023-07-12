@@ -41,7 +41,7 @@ export async function getNewCookie(): Promise<string> {
 
 export async function fetchWithCookie(
   url: URL | RequestInfo,
-  cookieId: CookieId,
+  cookieIdToStore: CookieId,
   init?: RequestInit
 ): Promise<[response: Response, body: any]> {
   let config = structuredClone(init);
@@ -61,7 +61,7 @@ export async function fetchWithCookie(
   const response = await fetch(url, config);
   const body = await response.json();
 
-  const newCookie = extractCookieById(body.cookie, cookieId);
+  const newCookie = extractCookieById(body.cookie, cookieIdToStore);
   if (body.cookie && newCookie) CREDENTIALS.cookie = newCookie;
 
   return [response, body];
@@ -118,6 +118,9 @@ export function storeTokenWithUri(uri: string) {
 
   CREDENTIALS.RSOtoken = access_token;
   CREDENTIALS.idToken = id_token;
+  CREDENTIALS.expire = Date.now() + expires_in * 1000;
+
+  console.log("Storing", CREDENTIALS);
 
   localStorage.setItem(RIOT_COOKIE, JSON.stringify(CREDENTIALS));
 }
