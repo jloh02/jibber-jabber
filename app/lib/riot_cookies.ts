@@ -1,11 +1,6 @@
+import { CredentialContext, CredentialsContext } from "./credentialContext";
+import { useContext } from "react";
 import { CookieAuthResult, StoredRiotCookie } from "./entities";
-
-let CREDENTIALS: StoredRiotCookie = {
-  cookie: "",
-  RSOtoken: "",
-  idToken: "",
-  expire: 0,
-};
 
 const RIOT_COOKIE = "RIOT_COOKIE";
 type CookieId = "asid" | "ssid";
@@ -24,9 +19,10 @@ function extractCookieById(cookie: string, id: CookieId) {
   return cookie.split(", ").find((v: string) => RegExp(`^${id}`).test(v));
 }
 
-export async function getNewCookie(): Promise<string> {
+export async function getNewCookie(ctx: CredentialContext): Promise<string> {
   for (let i = 0; i < 3; i++) {
     const [tokenRes, { cookie }] = await fetchWithCookie(
+      ctx,
       "/api/cookie",
       "asid",
       { method: "POST" }
@@ -40,20 +36,21 @@ export async function getNewCookie(): Promise<string> {
 }
 
 export async function fetchWithCookie(
+  { credentials, setCredentials }: CredentialContext,
   url: URL | RequestInfo,
   cookieIdToStore: CookieId,
   init?: RequestInit
 ): Promise<[response: Response, body: any]> {
   let config = structuredClone(init);
 
-  if (CREDENTIALS.cookie.length) {
+  if (credentials.cookie.length) {
     if (!config)
-      config = { body: JSON.stringify({ cookie: CREDENTIALS.cookie }) };
+      config = { body: JSON.stringify({ cookie: credentials.cookie }) };
     else if (!config.body)
-      config.body = JSON.stringify({ cookie: CREDENTIALS.cookie });
+      config.body = JSON.stringify({ cookie: credentials.cookie });
     else
       config.body = JSON.stringify({
-        cookie: CREDENTIALS.cookie,
+        cookie: credentials.cookie,
         ...JSON.parse(config.body.toString()),
       });
   }
@@ -62,28 +59,34 @@ export async function fetchWithCookie(
   const body = await response.json();
 
   const newCookie = extractCookieById(body.cookie, cookieIdToStore);
-  if (body.cookie && newCookie) CREDENTIALS.cookie = newCookie;
+  if (body.cookie && newCookie) setCredentials({ cookie: newCookie });
 
   return [response, body];
 }
 
-export async function refreshCookie(): Promise<CookieAuthResult | undefined> {
+export async function refreshCookie({
+  credentials,
+  setCredentials,
+}: CredentialContext): Promise<CookieAuthResult | undefined> {
   const storedFile = localStorage.getItem(RIOT_COOKIE);
   if (!storedFile) return;
 
   const json = JSON.parse(storedFile) as StoredRiotCookie;
   if (json.expire > Date.now()) return json;
 
-  CREDENTIALS.cookie = extractCookieById(json.cookie, "asid") ?? "";
+  credentials = setCredentials({
+    cookie: extractCookieById(json.cookie, "asid") ?? "",
+  });
 
   const [tokenRes, { cookie, ...accessTokens }] = await fetchWithCookie(
+    { credentials, setCredentials },
     "/api/cookie",
     "asid",
-    { method: "POST", headers: { Cookie: CREDENTIALS.cookie } }
+    { method: "POST", headers: { Cookie: credentials.cookie } }
   );
 
-  console.log(CREDENTIALS.cookie);
-  console.log(accessTokens);
+  // console.log(credentials.cookie);
+  // console.log(accessTokens);
 
   if (!accessTokens.response?.parameters?.uri) return;
 
@@ -103,24 +106,29 @@ export async function refreshCookie(): Promise<CookieAuthResult | undefined> {
     cookie,
   };
 
-  CREDENTIALS = refreshedTokens;
-  localStorage.setItem(RIOT_COOKIE, JSON.stringify(CREDENTIALS));
+  credentials = setCredentials(refreshedTokens);
+  localStorage.setItem(RIOT_COOKIE, JSON.stringify(credentials));
 
   return refreshedTokens;
 }
 
-export function storeTokenWithUri(uri: string) {
+export function storeTokenWithUri(
+  { credentials, setCredentials }: CredentialContext,
+  uri: string
+) {
   const { access_token, id_token, expires_in } = getTokensFromUri(uri);
 
   if (!access_token || !id_token || !expires_in) {
     throw Error("Unable to retrieve tokens from uri:" + uri);
   }
 
-  CREDENTIALS.RSOtoken = access_token;
-  CREDENTIALS.idToken = id_token;
-  CREDENTIALS.expire = Date.now() + expires_in * 1000;
+  credentials = setCredentials({
+    RSOtoken: access_token,
+    idToken: id_token,
+    expire: Date.now() + expires_in * 1000,
+  });
 
-  console.log("Storing", CREDENTIALS);
+  // console.log("Storing", credentials);
 
-  localStorage.setItem(RIOT_COOKIE, JSON.stringify(CREDENTIALS));
+  localStorage.setItem(RIOT_COOKIE, JSON.stringify(credentials));
 }

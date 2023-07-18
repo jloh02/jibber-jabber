@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import Button from "./components/button";
 import CheckBox from "./components/checkBox";
 import TextField from "./components/textField";
@@ -12,6 +12,7 @@ import {
   refreshCookie,
 } from "./lib/riot_cookies";
 import { useRouter } from "next/navigation";
+import { CredentialsContext } from "./lib/credentialContext";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -27,9 +28,18 @@ export default function Login() {
   const [error, setError] = useState("");
 
   const router = useRouter();
+  const context = useContext(CredentialsContext);
+
+  const refreshCookieCallback = useCallback(refreshCookie, [
+    context.credentials,
+  ]);
+  const getNewCookieCallback = useCallback(getNewCookie, [context.credentials]);
+  const fetchWithCookieCallback = useCallback(fetchWithCookie, [
+    context.credentials,
+  ]);
 
   useEffect(() => {
-    refreshCookie().then(async (credentials) => {
+    refreshCookieCallback(context).then(async (credentials) => {
       if (credentials) router.replace("/chat");
     });
   }, []);
@@ -46,12 +56,17 @@ export default function Login() {
         onClick={async () => {
           setError("");
           for (let i = 0; i < 3; i++) {
-            const cookie = await getNewCookie();
+            const cookie = await getNewCookieCallback(context);
 
-            const [authRes, body] = await fetchWithCookie("/api/auth", "asid", {
-              method: "PUT",
-              body: JSON.stringify({ username, password, cookie }),
-            });
+            const [authRes, body] = await fetchWithCookieCallback(
+              context,
+              "/api/auth",
+              "asid",
+              {
+                method: "PUT",
+                body: JSON.stringify({ username, password, cookie }),
+              }
+            );
 
             if (body.type === "error") continue;
 

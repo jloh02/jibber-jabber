@@ -1,11 +1,20 @@
 "use client";
 
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import TextField from "./textField";
 import styles from "./mfaDialog.module.css";
 import Error from "./error";
 import { fetchWithCookie, storeTokenWithUri } from "../lib/riot_cookies";
 import { useRouter } from "next/navigation";
+import { CredentialsContext } from "../lib/credentialContext";
 
 export default function MfaDialog({
   otpState,
@@ -14,6 +23,7 @@ export default function MfaDialog({
   otpState: [string, Dispatch<SetStateAction<string>>];
   keepLoggedIn: boolean;
 }) {
+  const context = useContext(CredentialsContext);
   const mfaDialog = useRef<HTMLDialogElement>(null);
   const [otp, setOtp] = otpState;
   const [email, setEmail] = useState("");
@@ -28,10 +38,32 @@ export default function MfaDialog({
       };
   }, [mfaDialog]);
 
+  const fetchWithCookieCallback = useCallback(fetchWithCookie, [
+    context.credentials,
+  ]);
+  const storeTokenWithUriCallback = useCallback(storeTokenWithUri, [
+    context.credentials,
+  ]);
+
+  const [previousUri, setPreviousUri] = useState("");
+  const [uri, setUri] = useState("");
+  useEffect(() => {
+    console.log("H", uri);
+    if (
+      uri.length &&
+      context.credentials &&
+      keepLoggedIn &&
+      uri != previousUri
+    ) {
+      storeTokenWithUriCallback(context, uri);
+      setPreviousUri(uri);
+    }
+  }, [context.credentials, keepLoggedIn, uri, previousUri]);
+
   useEffect(() => {
     if (otp.length >= 6) {
       setOtp("");
-      fetchWithCookie("/api/mfa", "ssid", {
+      fetchWithCookieCallback(context, "/api/mfa", "ssid", {
         method: "PUT",
         body: JSON.stringify({ code: otp }),
       }).then(async ([res, body]) => {
@@ -51,7 +83,8 @@ export default function MfaDialog({
             return;
           } else {
             setError("");
-            if (keepLoggedIn) storeTokenWithUri(body.response.parameters.uri);
+            // console.log(keepLoggedIn, body.response.parameters);
+            setUri(body.response.parameters.uri);
             router.push("/chat");
             return;
           }
