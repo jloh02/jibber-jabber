@@ -48,7 +48,6 @@ export default function MfaDialog({
   const [previousUri, setPreviousUri] = useState("");
   const [uri, setUri] = useState("");
   useEffect(() => {
-    console.log("H", uri);
     if (
       uri.length &&
       context.credentials &&

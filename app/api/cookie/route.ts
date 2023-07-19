@@ -40,7 +40,5 @@ export async function POST(request: NextRequest) {
   const authRes = await riotFetch(RIOT_AUTH_URL, init);
   const body = (await authRes.json()) as RiotCookieResponse;
 
-  console.log(body);
-
   return sendResponse(body, authRes);
 }

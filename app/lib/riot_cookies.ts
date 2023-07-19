@@ -1,9 +1,8 @@
 import { CredentialContext, CredentialsContext } from "./credentialContext";
-import { useContext } from "react";
 import { CookieAuthResult, StoredRiotCookie } from "./entities";
 
 const RIOT_COOKIE = "RIOT_COOKIE";
-type CookieId = "asid" | "ssid";
+type CookieId = "asid" | "ssid" | undefined;
 
 function getTokensFromUri(uri: string) {
   const url = new URL(uri);
@@ -58,8 +57,10 @@ export async function fetchWithCookie(
   const response = await fetch(url, config);
   const body = await response.json();
 
-  const newCookie = extractCookieById(body.cookie, cookieIdToStore);
-  if (body.cookie && newCookie) setCredentials({ cookie: newCookie });
+  if (cookieIdToStore) {
+    const newCookie = extractCookieById(body.cookie, cookieIdToStore);
+    if (body.cookie && newCookie) setCredentials({ cookie: newCookie });
+  }
 
   return [response, body];
 }
@@ -82,7 +83,7 @@ export async function refreshCookie({
     { credentials, setCredentials },
     "/api/cookie",
     "asid",
-    { method: "POST", headers: { Cookie: credentials.cookie } }
+    { method: "POST" }
   );
 
   // console.log(credentials.cookie);
@@ -110,6 +111,21 @@ export async function refreshCookie({
   localStorage.setItem(RIOT_COOKIE, JSON.stringify(credentials));
 
   return refreshedTokens;
+}
+
+export async function getUnsavedData(context: CredentialContext) {
+  const [res, body] = await fetchWithCookie(
+    context,
+    "/api/chatCredentials",
+    undefined,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        RSOtoken: context.credentials.RSOtoken,
+      }),
+    }
+  );
+  console.log(res.status, body);
 }
 
 export function storeTokenWithUri(
